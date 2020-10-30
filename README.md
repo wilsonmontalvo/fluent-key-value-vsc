@@ -1,65 +1,57 @@
-# fluent-key-value README
+# JSON snippets for Visual Studio Code
+Makes writing JSON fluent, with a simple set of snippets.
 
-This is the README for your extension "fluent-key-value". After writing up a brief description, we recommend including the following sections.
+## Applications:
 
-## Features
+* Write JSON in configuration files.
+* Write JSON code embed in different programming languages (eg. jQuery ajax).
+* Write any key/value pair style code in different programming languages.
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+Working with JSON config files:
 
-For example if there is an image subfolder under your extension project workspace:
+![JSON snippet example](https://raw.githubusercontent.com/wilsonmontalvo/vsc-jsonsnippets/master/images/json-snippet-demo.gif)
 
-\!\[feature X\]\(images/feature-x.png\)
+Defining json-data in several programming languages (JavaScript, TypeScript, etc):
 
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
+![JSON snippet example](https://raw.githubusercontent.com/wilsonmontalvo/vsc-jsonsnippets/master/images/json-snippet-js.gif)
 
-## Requirements
+## Snippets:
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+| Snippets | Content |
+| -------: | --------|
+| obj | Create a JSON object |
+| objc | Create a JSON object ending with comma |
+| arr | Create a JSON array |
+| arrc | Create a JSON array ending with comma |
+| pair | Create JSON key/value pair |
+| pairc | Create JSON key/value pair ending with comma |
+| paircln | Create JSON key/value pair ending with comma and jumping to next line. Not recommended for complex "value" |
 
-## Extension Settings
+## Productivity shortcuts:
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
+| Snippets | Content |
+| -------: | --------|
+| pair*2 | Create 02 pairs |
+| pair*3 | Create 03 pairs |
+| obj>1 | Create JSON object with 01 pair. |
+| obj>2 | Create JSON object with 02 pairs. |
+| obj>3 | Create JSON object with 03 pairs. |
+| arr>1 | Create JSON array with 01 item. |
+| arr>2 | Create JSON array with 02 items. |
+| arr>3 | Create JSON array with 03 items. |
 
-For example:
+## Supported languages:
 
-This extension contributes the following settings:
+* JSON
+* JavaScript
+* TypeScript
+* Other(s) to come...
 
-* `myExtension.enable`: enable/disable this extension
-* `myExtension.thing`: set to `blah` to do something
+## Extended functionality:
+Other languages with key/value pair style code:
 
-## Known Issues
+* C# : Anonymous types, Object initializer and Implicitly-typed Arrays in Object Initializers.
+* Other(s) to come...
 
-Calling out known issues can help limit users opening duplicate issues against your extension.
-
-## Release Notes
-
-Users appreciate release notes as you update your extension.
-
-### 1.0.0
-
-Initial release of ...
-
-### 1.0.1
-
-Fixed issue #.
-
-### 1.1.0
-
-Added features X, Y, and Z.
-
------------------------------------------------------------------------------------------------------------
-
-## Working with Markdown
-
-**Note:** You can author your README using Visual Studio Code.  Here are some useful editor keyboard shortcuts:
-
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux)
-* Toggle preview (`Shift+CMD+V` on macOS or `Shift+Ctrl+V` on Windows and Linux)
-* Press `Ctrl+Space` (Windows, Linux) or `Cmd+Space` (macOS) to see a list of Markdown snippets
-
-### For more information
-
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
-
-**Enjoy!**
+Visual Studio Marketplace: 
+https://marketplace.visualstudio.com/items?itemName=wmontalvo.vsc-jsonsnippets

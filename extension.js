@@ -17,11 +17,39 @@ function activate(context) {
 	// The command has been defined in the package.json file
 	// Now provide the implementation of the command with  registerCommand
 	// The commandId parameter must match the command field in package.json
-	let disposable = vscode.commands.registerCommand('fluent-key-value.helloWorld', function () {
-		// The code you place here will be executed every time your command is executed
+	let disposable = vscode.commands.registerCommand('fluent-key-value.create', function () {
+		let options = {};
+		if (vscode.window.activeTextEditor.selection.isEmpty) {
+			options = { prompt: "Enter snippet's shortcut", placeHolder: "e.g: ob>1" }
+		}
+		else {
+			var selectedText = vscode.window.activeTextEditor.document.getText(vscode.window.activeTextEditor.selection);
+			options = { prompt: "Enter snippet's shortcut", placeHolder: "e.g: ob>1", value: selectedText }
+		}
+		
+		vscode.window.showInputBox(options)
+			.then((snipShortcut) => {
+				const editor = vscode.window.activeTextEditor;
+				if (editor) {
+					const selection = editor.selection;
 
-		// Display a message box to the user
-		vscode.window.showInformationMessage('Hello World from fluent-key-value!');
+					// TODO: Parse text
+					let result = parseText(snipShortcut);
+					//if(!result.success) vscode.window.showWarningMessage('Unable to parse shortcut!');
+					if(snipShortcut && !result.success) vscode.window.showInformationMessage('Sorry, this command is not supported yet.');
+
+					// TODO: Get Language Provider
+					// TODO: Get snippet
+
+					editor.edit(editBuilder => {
+						editBuilder.replace(selection, '');
+					}).then(() => {
+						var position = vscode.window.activeTextEditor.selection.end; 
+						//vscode.window.activeTextEditor.selection = new vscode.Selection(position, position);
+						vscode.window.activeTextEditor.insertSnippet(new vscode.SnippetString(result.snippet), position);
+					});
+				}
+			});
 	});
 
 	context.subscriptions.push(disposable);
@@ -34,4 +62,30 @@ function deactivate() {}
 module.exports = {
 	activate,
 	deactivate
+}
+
+function parseText(str) {
+	let parseResult = {
+		'snippet': '',
+		'success': true
+	};
+
+	if(str == 'ob>1'){
+		parseResult.snippet = '{\n\t\"${1:<key>}\": ${2:<value>}\n}$0';
+		return parseResult;
+	}
+	
+	// if(str == 'ar'){
+	// 	parseResult.snippet = '[\n\t$0\n]';
+	// 	return parseResult;
+	// }
+
+	// if(str == 'pa'){
+	// 	parseResult.snippet = '\"${1:<key>}\": $0';
+	// 	return parseResult;
+	// }
+	
+	parseResult.snippet = str;
+	parseResult.success = false;
+    return parseResult;
 }
