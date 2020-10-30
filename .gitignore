@@ -39,3 +39,6 @@ bin
 
 # Extension packages
 *.vsix
+
+# Node modules
+/node_modules
