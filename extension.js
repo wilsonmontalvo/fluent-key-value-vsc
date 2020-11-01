@@ -64,28 +64,143 @@ module.exports = {
 	deactivate
 }
 
+function getOpeningOperator(item) {
+	if (item == ')') return '(';
+	if (item == ']') return '[';
+	return null;
+}
+
+function getTreeFor(expTree, op, value) {
+	return {
+		root : op,
+		left : expTree,
+		right: value
+	};
+}
+
+function buildExpressionTree(str){
+	if(!str) return '';
+
+	var operators = ['(', '[', ',', '>', '*'];
+	var closings = [')', ']']
+	var expression = str.split(/(\[|\]|\(|\)|>|,|\*)/g).filter(x => x !== '');
+	var partsStack = [];
+	var operatorsStack = [];
+	let snippetResult = '';
+	let expTree = {
+		root : '',
+		left : null,
+		right: null
+	} 
+
+	// iterate items in expression
+	expression.forEach(item => {
+		let partialContent = '';
+		if (closings.includes(item)) {
+			var operatorOpening = getOpeningOperator(item);
+
+			do {
+				var right = partsStack.pop();
+				var left = partsStack.pop();
+				var op = operatorsStack.pop();
+				
+				var newNode = getTreeFor(left, op, right);
+				partsStack.push(newNode);
+
+				if(operatorsStack.length > 0 && operatorsStack[operatorsStack.length - 1] == '(')
+					op = operatorsStack.pop();
+			} while (op !== operatorOpening)
+		}
+		else {
+			if(operators.includes(item))
+				operatorsStack.push(item);
+			else
+				partsStack.push(getTreeFor(null, item, null));
+		}
+	});
+
+	if(partsStack.length > 1) {
+		// consume remaining items in stacks
+		do {
+			var right = partsStack.pop();
+			var left = partsStack.pop();
+			var op = operatorsStack.pop();
+			
+			var newNode = getTreeFor(left, op, right);
+			partsStack.push(newNode);
+		} while (operatorsStack.length > 0)
+	}
+
+	console.log('Total items:' + partsStack.length);
+	return partsStack[0];
+}
+
+function getKeyValuePrefix(key) {
+	return '"' + key + '": ';
+}
+
+function resolve(left, operator, right) {
+	let isObject = left == 'o';
+	let isArray = left == 'a';
+
+	if (operator == '[') {
+		return getKeyValuePrefix(left) + right;
+	}
+	else if (operator == '>') {
+		if (isObject) return '{\n\t' + right + '\n}';
+		if (isArray) return '[\n\t' + right + '\n]';
+	}
+	else if (operator == ',') {
+		let item1 = left;
+		let item2 = right;
+		if (item1.match(/^[0-9a-zA-Z]+$/)) item1 = getKeyValuePrefix(left);
+		if (item2.match(/^[0-9a-zA-Z]+$/)) item2 = getKeyValuePrefix(right);
+		return item1 + ',\n' + item2
+	}
+	else if (operator == '*') {
+		let multiplier = parseInt(right);
+		let arr = [];
+		for (let index = 0; index < multiplier; index++) {
+			arr.push(left);
+		}
+
+		return arr.join();
+	}
+
+	return '';
+}
+
+function getPairOrValue(item){
+	if (item.startsWith('['))
+		return item.substring(1, item.lenght - 2);
+	else
+		return '"' + item + '": '
+}
+
+function evaluateExpression(node) {
+	if (!node)
+		return '';
+
+	if(!node.left){
+		if(node.root == '(') return evaluateExpression(node.right);
+		else return node.root;
+	}
+
+	let operator = node.root;
+	let left = evaluateExpression(node.left);
+	let right = evaluateExpression(node.right);
+
+	var result = resolve(left, operator, right);
+
+	return result;
+}
+
 function parseText(str) {
-	let parseResult = {
-		'snippet': '',
+	let expTree = buildExpressionTree(str);
+	let result = evaluateExpression(expTree);
+
+	return {
+		'snippet': result,
 		'success': true
 	};
-
-	if(str == 'ob>1'){
-		parseResult.snippet = '{\n\t\"${1:<key>}\": ${2:<value>}\n}$0';
-		return parseResult;
-	}
-	
-	// if(str == 'ar'){
-	// 	parseResult.snippet = '[\n\t$0\n]';
-	// 	return parseResult;
-	// }
-
-	// if(str == 'pa'){
-	// 	parseResult.snippet = '\"${1:<key>}\": $0';
-	// 	return parseResult;
-	// }
-	
-	parseResult.snippet = str;
-	parseResult.success = false;
-    return parseResult;
 }
