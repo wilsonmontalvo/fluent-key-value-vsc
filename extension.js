@@ -127,6 +127,127 @@ function buildExpressionTree(str){
 	return partsStack[0];
 }
 
+class KeyValueOperator {
+  constructor(prefix, value, sufix) {
+    this.prefix = prefix;
+    this.value = value;
+    this.sufix = sufix;
+  }
+}
+
+class KeyValueResolver {
+  getKeyValuePrefix(key) { return 'N/A'; }
+	getOperator(opId, container) { return new KeyValueOperator('', 'N/A', ''); }
+}
+
+class JsonResolver extends KeyValueResolver {
+  getKeyValuePrefix(key) { 
+		return '"' + key + '": ';
+	}
+
+	getOperator(opId, container) { 
+		if(opId = '>') {
+			if(container == 'o') return new KeyValueOperator('{\n\t', '>', '\n}');
+			if(container == 'a') return new KeyValueOperator('[\n\t', '>', '\n]');
+		}
+		else if(opId = '[') return new KeyValueOperator('[\n\t', '[', '\n]');
+		else if(opId = ',') return new KeyValueOperator('', ',\n', '');
+		return new KeyValueOperator('', 'N/A', '');
+	}
+
+	resolve(left, operator, right, contextOp) {
+		let isObject = left == 'o';
+		let isArray = left == 'a';
+	
+		if (operator == '[') {
+			return left + ': ' + right;
+		}
+		else if (operator == '>') {
+			if (isObject) return '{\n\t' + right + '\n}';
+			if (isArray) return '[\n\t' + right + '\n]';
+		}
+		else if (operator == ',') {
+			let item1 = left;
+			let item2 = right;
+			if (item1.match(/^[0-9a-zA-Z]+$/)) item1 = getKeyValuePrefix(left);
+			if (item2.match(/^[0-9a-zA-Z]+$/)) item2 = getKeyValuePrefix(right);
+			return item1 + ',\n' + item2
+		}
+		else if (operator == '*') {
+			let multiplier = parseInt(right);
+			let arr = [];
+			for (let index = 0; index < multiplier; index++) {
+				arr.push(left);
+			}
+	
+			return arr.join();
+		}
+	
+		return '';
+	}
+}
+
+class YamlResolver extends KeyValueResolver {
+  getKeyValuePrefix(key) { 
+		return key + ': ';
+	}
+
+	getPair(key, value) {
+		return key + ': ' + value;
+	}
+	
+	getItem(item, contextOp) {
+		if(contextOp == 'o') return new KeyValueOperator('\n\t', contextOp, '');
+		else if(contextOp == 'a') return new KeyValueOperator('\n- ', contextOp, '');
+	}
+
+	getOperator(opId, container) { 
+		if(opId = '>') {
+			if(container == 'o') return new KeyValueOperator('\n\t', opId, '');
+			if(container == 'a') return new KeyValueOperator('\n- ', opId, '');
+		}
+		else if(opId = '[') return new KeyValueOperator('', '[', '');
+		else if(opId = ',') return new KeyValueOperator('', '\n', '');
+		else if(opId = '*') return new KeyValueOperator('', '', '');
+		return new KeyValueOperator('', 'N/A', '');
+	}
+
+	resolve(left, operator, right, contextOp) {
+		let isObject = left == 'o';
+		let isArray = left == 'a';
+	
+		if (operator == '[') { // '[' is only for pairs
+			return left + ': '+ right;
+		}
+		else if (operator == '>') {
+			if (isObject) return '\n\t' + right + '\n';
+			if (isArray) return '\n\t' + right + '\n';
+		}
+		else if (operator == ',') {
+			let item1 = left;
+			let item2 = right;
+			if (item1.match(/^[0-9a-zA-Z]+$/)) item1 = getKeyValuePrefix(left);
+			if (item2.match(/^[0-9a-zA-Z]+$/)) item2 = getKeyValuePrefix(right);
+
+			if(isArray)
+				return '- ' + item1 + '\n' + item2
+			else
+				return item1 + '\n' + item2
+		}
+		else if (operator == '*') {
+			let multiplier = parseInt(right);
+			let arr = [];
+			for (let index = 0; index < multiplier; index++) {
+				arr.push(left);
+			}
+	
+			return arr.join('');
+		}
+	
+		return '';
+	}
+}
+
 function getKeyValuePrefix(key) {
 	return '"' + key + '": ';
 }
@@ -162,27 +283,31 @@ function resolve(left, operator, right) {
 	return '';
 }
 
-function evaluateExpression(node) {
+function evaluateExpression(node, contextOp) {
 	if (!node)
 		return '';
 
-	if(!node.left){
-		if(node.root == '(') return evaluateExpression(node.right);
+	let operator = node.root;
+	if(!node.left) { // root of tree.
+		if(operator == '(') return evaluateExpression(node.right, null);
 		else return node.root;
 	}
 
-	let operator = node.root;
-	let left = evaluateExpression(node.left);
-	let right = evaluateExpression(node.right);
+	//if (contextOp && (operator == '>' || operator == '[')) contextOp = operator;
 
-	var result = resolve(left, operator, right);
+	let left = evaluateExpression(node.left, null);
+	let right = evaluateExpression(node.right, node.left);
+
+	 //let resolver = new JsonResolver();
+	let resolver = new YamlResolver();
+	var result = resolver.resolve(left, operator, right, contextOp);
 
 	return result;
 }
 
 function parseText(str) {
 	let expTree = buildExpressionTree(str);
-	let result = evaluateExpression(expTree);
+	let result = evaluateExpression(expTree, null);
 
 	return {
 		'snippet': result,
