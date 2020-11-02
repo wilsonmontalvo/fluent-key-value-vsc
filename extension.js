@@ -86,16 +86,9 @@ function buildExpressionTree(str){
 	var expression = str.split(/(\[|\]|\(|\)|>|,|\*)/g).filter(x => x !== '');
 	var partsStack = [];
 	var operatorsStack = [];
-	let snippetResult = '';
-	let expTree = {
-		root : '',
-		left : null,
-		right: null
-	} 
 
 	// iterate items in expression
 	expression.forEach(item => {
-		let partialContent = '';
 		if (closings.includes(item)) {
 			var operatorOpening = getOpeningOperator(item);
 
@@ -131,7 +124,6 @@ function buildExpressionTree(str){
 		} while (operatorsStack.length > 0)
 	}
 
-	console.log('Total items:' + partsStack.length);
 	return partsStack[0];
 }
 
@@ -168,13 +160,6 @@ function resolve(left, operator, right) {
 	}
 
 	return '';
-}
-
-function getPairOrValue(item){
-	if (item.startsWith('['))
-		return item.substring(1, item.lenght - 2);
-	else
-		return '"' + item + '": '
 }
 
 function evaluateExpression(node) {
