@@ -136,12 +136,12 @@ class KeyValueOperator {
 }
 
 class KeyValueResolver {
-  getKeyValuePrefix(key) { return 'N/A'; }
+  getItem(key) { return 'N/A'; }
 	getOperator(opId, container) { return new KeyValueOperator('', 'N/A', ''); }
 }
 
 class JsonResolver extends KeyValueResolver {
-  getKeyValuePrefix(key) { 
+  getItem(key) { 
 		return '"' + key + '": ';
 	}
 
@@ -188,63 +188,73 @@ class JsonResolver extends KeyValueResolver {
 }
 
 class YamlResolver extends KeyValueResolver {
-  getKeyValuePrefix(key) { 
-		return key + ': ';
+  getItem(key, contextOp) { 
+		var reservedWords = ['a', 'o'];
+
+		if (!contextOp || reservedWords.includes(contextOp)) { // It's the 'key'
+			let prefix = key + ': ';
+			// return prefix;
+	
+			if(contextOp === 'a') return '- ' + prefix;
+			else return prefix;
+		}
+		else { // It's the value
+			return key;
+		}
 	}
 
-	getPair(key, value) {
-		return key + ': ' + value;
+	getPair(key, value, contextOp) { 
+		if (value.match(/^[0-9a-zA-Z]+$/)) { // It's a primitive value
+			return key + '' + value;
+		}
+		else { // It's an object value
+			return key + '\n\t' + value;
+		}
+	}
+
+	getObject(pair, contextOp) { 
+		if (contextOp === 'a') return '- ' + pair;
+		else return pair;
+	}
+
+	concatenateItems(item1, item2, contextOp) { 
+		return item1 + '\n' + item2;
 	}
 	
-	getItem(item, contextOp) {
-		if(contextOp == 'o') return new KeyValueOperator('\n\t', contextOp, '');
-		else if(contextOp == 'a') return new KeyValueOperator('\n- ', contextOp, '');
-	}
-
-	getOperator(opId, container) { 
-		if(opId = '>') {
-			if(container == 'o') return new KeyValueOperator('\n\t', opId, '');
-			if(container == 'a') return new KeyValueOperator('\n- ', opId, '');
+	multiplyItem(item, repetitions, contextOp) { 
+		let multiplier = parseInt(repetitions);
+		let arr = [];
+		for (let index = 0; index < multiplier; index++) {
+			if (contextOp == 'a')	arr.push('- ' + item);
+			else arr.push(item);
 		}
-		else if(opId = '[') return new KeyValueOperator('', '[', '');
-		else if(opId = ',') return new KeyValueOperator('', '\n', '');
-		else if(opId = '*') return new KeyValueOperator('', '', '');
-		return new KeyValueOperator('', 'N/A', '');
+		
+		return arr.join('\n');
 	}
 
 	resolve(left, operator, right, contextOp) {
 		let isObject = left == 'o';
 		let isArray = left == 'a';
 	
-		if (operator == '[') { // '[' is only for pairs
-			return left + ': '+ right;
+		if (!operator) {
+			return this.getItem(right, contextOp);
+		}
+		else if (operator == '[') { // '[' is only for pairs
+			return this.getPair(left, right, contextOp); // "left" is expected to be a resolved "key" (formatted/followed by ":")
 		}
 		else if (operator == '>') {
-			if (isObject) return '\n\t' + right + '\n';
-			if (isArray) return '\n\t' + right + '\n';
+			if (isObject) return this.getObject(right, contextOp);
+			if (isArray) return '\n\t' + right;
 		}
 		else if (operator == ',') {
-			let item1 = left;
-			let item2 = right;
-			if (item1.match(/^[0-9a-zA-Z]+$/)) item1 = getKeyValuePrefix(left);
-			if (item2.match(/^[0-9a-zA-Z]+$/)) item2 = getKeyValuePrefix(right);
-
-			if(isArray)
-				return '- ' + item1 + '\n' + item2
-			else
-				return item1 + '\n' + item2
+			return this.concatenateItems(left, right);
 		}
 		else if (operator == '*') {
-			let multiplier = parseInt(right);
-			let arr = [];
-			for (let index = 0; index < multiplier; index++) {
-				arr.push(left);
-			}
-	
-			return arr.join('');
+			let repetitions = parseInt(right);
+			return this.multiplyItem(left, repetitions, contextOp);
 		}
 	
-		return '';
+		return this.getItem(right, contextOp);
 	}
 }
 
@@ -288,18 +298,21 @@ function evaluateExpression(node, contextOp) {
 		return '';
 
 	let operator = node.root;
+	var reservedWords = ['a', 'o'];
+	//let resolver = new JsonResolver();
+	let resolver = new YamlResolver();
+
 	if(!node.left) { // root of tree.
 		if(operator == '(') return evaluateExpression(node.right, null);
-		else return node.root;
+		else if (reservedWords.includes(operator)) return node.root;
+		else return resolver.resolve(null, null, node.root, contextOp);
 	}
 
 	//if (contextOp && (operator == '>' || operator == '[')) contextOp = operator;
 
 	let left = evaluateExpression(node.left, null);
-	let right = evaluateExpression(node.right, node.left);
+	let right = evaluateExpression(node.right, node.left.root);
 
-	 //let resolver = new JsonResolver();
-	let resolver = new YamlResolver();
 	var result = resolver.resolve(left, operator, right, contextOp);
 
 	return result;
