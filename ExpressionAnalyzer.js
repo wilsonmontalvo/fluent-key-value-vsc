@@ -1,3 +1,5 @@
+const { Node } = require("./Node");
+
 class ExpressionAnalyzer {
 	constructor(resolver) {
 		this.resolver = resolver;
@@ -19,13 +21,18 @@ class ExpressionAnalyzer {
 	}
 
 	getTreeFor(expTree, op, value) {
-		return {
-			root: op,
-			left: expTree,
-			right: value
-		};
+		// return {
+		// 	root: op,
+		// 	left: expTree,
+		// 	right: value
+		// };
+
+		return new Node(expTree, op, value)
 	}
 
+	// Algorithm references:
+	// https://www.studytonight.com/post/arithmetic-expressioninfix-evaluation-using-stack
+	// https://algorithms.tutorialhorizon.com/evaluation-of-infix-expressions/
 	buildExpressionTree(str) {
 		if (!str)
 			return '';
@@ -33,8 +40,8 @@ class ExpressionAnalyzer {
 		var operators = ['(', '[', ',', '>', '*'];
 		var closings = [')', ']'];
 		var expression = str.split(/(\[|\]|\(|\)|>|,|\*)/g).filter(x => x !== '');
-		var partsStack = [];
-		var operatorsStack = [];
+		var partsStack = []; // Contains input elements, but also Nodes when building the Tree. So, final item is a Node.
+		var operatorsStack = []; // Contains operators from the input
 
 		// iterate items in expression
 		expression.forEach(item => {
@@ -62,7 +69,7 @@ class ExpressionAnalyzer {
 			}
 		});
 
-		if (partsStack.length > 1) {
+		if (partsStack.length > 0) {
 			// consume remaining items in stack
 			do {
 				var right = partsStack.pop();
@@ -84,23 +91,44 @@ class ExpressionAnalyzer {
 		let operator = node.root;
 		var reservedWords = ['a', 'o'];
 
-		//let resolver = new YamlResolver();
-		if (!node.left) { // root of tree.
+		if (node.isLeafe()) {
+			//if (reservedWords.includes(operator))
+			// 	return node.root;
+			// else 
+			return this.resolver.resolve(null, null, node.root, node.parent)
+		}
+		else  
+		if (!node.left) {
 			if (operator == '(')
 				return this.evaluateExpression(node.right, null);
-			else if (reservedWords.includes(operator))
-				return node.root;
-			else
-				return this.resolver.resolve(null, null, node.root, contextOp);
+			else //if (operator == '*')
+				return this.resolver.resolve(null, node.root, node.right.root, node.parent);
+			//else ;
+			// else if (reservedWords.includes(operator))
+			// 	return node.root;
+			// else
+			// 	return this.resolver.resolve(null, null, node.root, contextOp);
 		}
+		else if (node.left.isLeafe() && node.right.isLeafe()) {
+			return this.resolver.resolve(node.left.root, operator, node.right.root, node.parent);
+		}
+		else {
+			let left = '';
+			let right = '';
+			
+			//left = this.evaluateExpression(node.left, null);
+			if(node.left.isLeafe())
+				left = node.left.root;
+			else
+				left = this.evaluateExpression(node.left, node.parent);
+			
+			right = this.evaluateExpression(node.right, node.parent);
+			
+			var result = this.resolver.resolve(left, operator, right, node.parent);
 
+			return result;
+		}
 		//if (contextOp && (operator == '>' || operator == '[')) contextOp = operator;
-		let left = this.evaluateExpression(node.left, null);
-		let right = this.evaluateExpression(node.right, node.left.root);
-
-		var result = this.resolver.resolve(left, operator, right, contextOp);
-
-		return result;
 	}
 }
 

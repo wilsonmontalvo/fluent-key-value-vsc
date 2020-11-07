@@ -1,4 +1,5 @@
 const { KeyValueResolver } = require("./KeyValueResolver");
+const { Node } = require("./Node");
 
 class JsonResolver extends KeyValueResolver {
 	getItem(part, contextOp) {
@@ -15,10 +16,10 @@ class JsonResolver extends KeyValueResolver {
 
 	getPair(key, value, contextOp) {
 		if (value.match(/^[0-9a-zA-Z]+$/)) { // "Value" is a primitive value
-			return key + '"' + value + '"';
+			return '"' + key + '": "' + value + '"';
 		}
 		else { // "Value" is an object value
-			return key + '' + value;
+			return '"' + key + '": ' + value;
 		}
 	}
 
@@ -45,26 +46,56 @@ class JsonResolver extends KeyValueResolver {
 	}
 
 	resolve(left, operator, right, contextOp) {
-		let isObject = left == 'o';
-		let isArray = left == 'a';
+		let isInsideObject = false;
+		let isInsideArray = false;
 
-		if (!operator) {
-			return this.getItem(right, contextOp);
+		if (contextOp) {
+			isInsideObject = contextOp.left.root == 'o';
+			isInsideArray = contextOp.left.root == 'a';
+		}
+
+		if (!operator) { // It's single item
+			if (right == 'o')
+				return this.getObject('');
+			else if (right == 'a')
+				return this.getArray('');
+			else
+				return this.getPair(right, '');
 		}
 		else if (operator == '[') { // '[' is only for pairs
-			return this.getPair(left, right, contextOp); // "left" is expected to be a resolved "key" (formatted/followed by ":")
+			return this.getPair(left, right); // 'left' is expected to be a resolved "key" (formatted/followed by ":")
 		}
 		else if (operator == '>') {
-			if (isObject)
-				return this.getObject(right, contextOp);
-			if (isArray)
-				return this.getArray(right, contextOp);
+			let content = right;
+			if(right.match(/^[0-9a-zA-Z]+$/))
+				content = this.getPair(right, '');
+			if (left == 'o')
+				return this.getObject(content);
+			else if (left == 'a')
+				return this.getArray(content);
+			else 
+				return '###'
 		}
 		else if (operator == ',') {
-			return this.concatenateItems(left, right);
+			let item1 = left;
+			let item2 = right;
+
+			if(left.match(/^[0-9a-zA-Z]+$/))
+				item1 = this.getPair(left, '');
+			if(right.match(/^[0-9a-zA-Z]+$/))
+				item2 = this.getPair(right, '');
+
+			return this.concatenateItems(item1, item2);
+			// if (isInsideObject || isInsideArray)
+			// 	return this.concatenateItems(left, right);
 		}
 		else if (operator == '*') {
 			let repetitions = parseInt(right);
+			if (!left)
+				left = this.getPair('', '');
+			else if (left == 'o')
+				left = this.getObject('', contextOp);
+
 			return this.multiplyItem(left, repetitions, contextOp);
 		}
 
