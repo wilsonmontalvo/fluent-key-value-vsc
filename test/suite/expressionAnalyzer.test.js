@@ -167,4 +167,34 @@ suite('Resolver Test Suite', () => {
 
 		assert.equal(result, '{\n\t"": ,\n"": \n}');
 	});
+	
+	test('evaluateExpression_(word)*2_shouldReturn02EqualPairsWithKey', () => {
+		// Expression: (image)*2
+		let node1 = new Node(null, 'image', null);
+		let node2 = new Node(null, '(', node1);
+
+		let node3 = new Node(null, '2', null);
+		let tree = new Node(node2, '*', node3);
+
+		var result = expAnalyzer.evaluateExpression(tree, null);
+
+		assert.equal(result, '"image": ,\n"image": ');
+	});
+
+	test('evaluateExpression_(o>word1,word2)*2_shouldReturn02ObjectsWithTwoParsEach', () => {
+		// Expression: (o>name,image)*2
+		let node1 = new Node(null, 'name', null);
+		let node2 = new Node(null, 'image', null);
+		let node3 = new Node(node1, ',', node2);
+
+		let node4 = new Node(null, 'o', null);
+		let node5 = new Node(node4, '>', node3);
+
+		let node6 = new Node(null, '2', null);
+		let tree = new Node(node5, '*', node6);
+
+		var result = expAnalyzer.evaluateExpression(tree, null);
+
+		assert.equal(result, '{\n\t"name": ,\n"image": \n},\n{\n\t"name": ,\n"image": \n}');
+	});
 });

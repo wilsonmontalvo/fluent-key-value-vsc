@@ -46,14 +46,6 @@ class JsonResolver extends KeyValueResolver {
 	}
 
 	resolve(left, operator, right, contextOp) {
-		let isInsideObject = false;
-		let isInsideArray = false;
-
-		if (contextOp) {
-			isInsideObject = contextOp.left.root == 'o';
-			isInsideArray = contextOp.left.root == 'a';
-		}
-
 		if (!operator) { // It's single item
 			if (right == 'o')
 				return this.getObject('');
@@ -63,7 +55,7 @@ class JsonResolver extends KeyValueResolver {
 				return this.getPair(right, '');
 		}
 		else if (operator == '[') { // '[' is only for pairs
-			return this.getPair(left, right); // 'left' is expected to be a resolved "key" (formatted/followed by ":")
+			return this.getPair(left, right);
 		}
 		else if (operator == '>') {
 			let content = right;
@@ -86,8 +78,6 @@ class JsonResolver extends KeyValueResolver {
 				item2 = this.getPair(right, '');
 
 			return this.concatenateItems(item1, item2);
-			// if (isInsideObject || isInsideArray)
-			// 	return this.concatenateItems(left, right);
 		}
 		else if (operator == '*') {
 			let repetitions = parseInt(right);

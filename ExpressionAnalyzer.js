@@ -38,13 +38,16 @@ class ExpressionAnalyzer {
 			return '';
 
 		var operators = ['(', '[', ',', '>', '*'];
+		var operatorThatAllowsImplicitOperand = ['*']; // e.g: "*2" has an implicit "null" left operand.
 		var closings = [')', ']'];
 		var expression = str.split(/(\[|\]|\(|\)|>|,|\*)/g).filter(x => x !== '');
 		var partsStack = []; // Contains input elements, but also Nodes when building the Tree. So, final item is a Node.
 		var operatorsStack = []; // Contains operators from the input
 
 		// iterate items in expression
-		expression.forEach(item => {
+		for (let i = 0; i < expression.length; i++) {
+			const item = expression[i];
+			
 			if (closings.includes(item)) {
 				var operatorOpening = this.getOpeningOperator(item);
 
@@ -61,25 +64,25 @@ class ExpressionAnalyzer {
 				} while (op !== operatorOpening);
 			}
 			else {
-				if (operators.includes(item))
+				if (operators.includes(item)) {
 					operatorsStack.push(item);
-
+					if(operatorThatAllowsImplicitOperand.includes(item) && i > 0 && operators.includes(expression[i-1])) // Operator needs an implicit empty value.
+						partsStack.push(this.getTreeFor(null, null, null)); // Add implicit "null" operand
+				}
 				else
 					partsStack.push(this.getTreeFor(null, item, null));
 			}
-		});
-
-		if (partsStack.length > 0) {
-			// consume remaining items in stack
-			do {
-				var right = partsStack.pop();
-				var left = partsStack.pop();
-				var op = operatorsStack.pop();
-
-				var newNode = this.getTreeFor(left, op, right);
-				partsStack.push(newNode);
-			} while (operatorsStack.length > 0);
 		}
+
+		// Apply remaining operations in stack (typically when not grouping items - not using "(..)" )
+		while (operatorsStack.length > 0) {
+			var right = partsStack.pop();
+			var left = partsStack.pop();
+			var op = operatorsStack.pop();
+
+			var newNode = this.getTreeFor(left, op, right);
+			partsStack.push(newNode);
+		} 
 
 		return partsStack[0];
 	}
@@ -122,7 +125,10 @@ class ExpressionAnalyzer {
 			else
 				left = this.evaluateExpression(node.left, node.parent);
 			
-			right = this.evaluateExpression(node.right, node.parent);
+			if(node.right.isLeafe())
+				right = node.right.root;
+			else
+				right = this.evaluateExpression(node.right, node.parent);
 			
 			var result = this.resolver.resolve(left, operator, right, node.parent);
 
