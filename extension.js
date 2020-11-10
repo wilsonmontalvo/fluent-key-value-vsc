@@ -22,7 +22,7 @@ function activate(context) {
 	let disposable = vscode.commands.registerCommand('fluent-key-value.create', function () {
 		let options = {};
 		if (vscode.window.activeTextEditor.selection.isEmpty) {
-			options = { prompt: "Enter snippet's shortcut", placeHolder: "e.g: ob>1" }
+			options = { prompt: "Enter snippet's shortcut", placeHolder: "e.g: o>image[nginx]" }
 		}
 		else {
 			var selectedText = vscode.window.activeTextEditor.document.getText(vscode.window.activeTextEditor.selection);
