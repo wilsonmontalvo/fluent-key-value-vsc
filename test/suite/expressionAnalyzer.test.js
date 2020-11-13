@@ -69,7 +69,7 @@ suite('Resolver Test Suite', () => {
 
 		var result = expAnalyzer.evaluateExpression(node, null);
 
-		assert.equal(result, '"port": "80"');
+		assert.equal(result, '"port": 80');
 	});
 	
 	test('evaluateExpression_word1,word2[value]_shouldReturn02pairsAnd2ndWithValue', () => {
@@ -83,7 +83,7 @@ suite('Resolver Test Suite', () => {
 
 		var result = expAnalyzer.evaluateExpression(tree, null);
 
-		assert.equal(result, '"image": ,\n"port": "80"');
+		assert.equal(result, '"image": ,\n"port": 80');
 	});
 
 	test('evaluateExpression_o>word_shouldReturnAnObjectWith01PairWithoutValue', () => {
@@ -108,7 +108,7 @@ suite('Resolver Test Suite', () => {
 
 		var result = expAnalyzer.evaluateExpression(tree, null);
 
-		assert.equal(result, '{\n\t"port": "80"\n}');
+		assert.equal(result, '{\n\t"port": 80\n}');
 	});
 
 	test('evaluateExpression_o>word1,word2[value]_shouldReturnAnObjectWith02PairsWithValue', () => {
@@ -125,7 +125,7 @@ suite('Resolver Test Suite', () => {
 
 		var result = expAnalyzer.evaluateExpression(tree, null);
 
-		assert.equal(result, '{\n\t"image": ,\n"port": "80"\n}');
+		assert.equal(result, '{\n\t"image": ,\n"port": 80\n}');
 	});
 
 	test('evaluateExpression_o>word1[value],word2_shouldReturnAnObjectWith02PairsWithValue', () => {
@@ -142,7 +142,7 @@ suite('Resolver Test Suite', () => {
 
 		var result = expAnalyzer.evaluateExpression(tree, null);
 
-		assert.equal(result, '{\n\t"port": "80",\n"image": \n}');
+		assert.equal(result, '{\n\t"port": 80,\n"image": \n}');
 	});
 
 	test('evaluateExpression_*2_shouldReturn02EmptyPairs', () => {

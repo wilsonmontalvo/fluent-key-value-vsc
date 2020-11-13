@@ -1,15 +1,17 @@
 # Change Log
 
-## [0.9.0 - Nov 10, 2020]
+## [0.9.0 - Nov 11, 2020]
 
 - Changed project name.
 - **Commands for productivity shortcuts (Beta)**  
-We can now introduce snippets by writing commands in the Command Palette (`Ctrl + Shift + P` on Windows).  
+We can now introduce JSON snippets by writing commands in the Command Palette: `Ctrl + Shift + P` then search for `Fluent Key-Value: Create JSON`.  
 Here some commands to try out:  
+`name`  
 `name,image`  
 `isActive[true]`  
-`o>port[80]`  
-`a>(o>lang,path)*2`  
+`o>language,path`  
+`a>(o>language,path)*2`  
+`snippets[a>(o>language,path)*2]`  
 `o>spec[o>containers[a>(o>name[frontend],image[nginx],ports[a>o>containerPort[80]])*2]]`
 
 ## [0.8.0 - Oct 31, 2020]

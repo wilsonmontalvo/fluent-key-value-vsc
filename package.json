@@ -31,7 +31,7 @@
         "commands": [
             {
                 "command": "fluent-key-value.create",
-                "title": "Fluent Key-Value: Create JSON"
+                "title": "Fluent Key-Value: Create JSON (Beta)"
             }
         ],
         "snippets": [

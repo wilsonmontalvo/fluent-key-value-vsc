@@ -15,7 +15,13 @@ class JsonResolver extends KeyValueResolver {
 	}
 
 	getPair(key, value, contextOp) {
-		if (value.match(/^[0-9a-zA-Z]+$/)) { // "Value" is a primitive value
+		if (value === '') {
+			return '"' + key + '": ';
+		}
+		else if (value === 'true' || value === 'false' || value === 'null' || value.match(/^[0-9]+$/)) {
+			return '"' + key + '": ' + value;
+		}
+		else if (value.match(/^[0-9a-zA-Z]+$/)) { // "Value" is a primitive value
 			return '"' + key + '": "' + value + '"';
 		}
 		else { // "Value" is an object value
