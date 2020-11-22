@@ -1,6 +1,6 @@
 {
     "name": "vsc-jsonsnippets",
-    "displayName": "Fluent Key-Value",
+    "displayName": "Fluent Key-Value - JSON",
     "description": "Makes writing JSON fluent, with a simple set of snippets.",
     "icon": "images/json_logo.png",
     "publisher": "wmontalvo",

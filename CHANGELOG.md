@@ -1,5 +1,9 @@
 # Change Log
 
+## [0.9.1 - Nov 22, 2020]
+
+- Fixed JSON format for shortcut commands.
+
 ## [0.9.0 - Nov 11, 2020]
 
 - Changed project name.
