@@ -14,38 +14,66 @@ class JsonResolver extends KeyValueResolver {
 		}
 	}
 
-	getPair(key, value, contextOp) {
+	getValueItem(value, depth) {
+		let offset = this.getOffset(depth);
+
+		if (value === 'true' || value === 'false' || value === 'null' || value.match(/^[0-9]+$/))
+			return offset + value;
+		else
+			return offset + '"' + value + '"';
+	}
+
+	getOffset(depth) {
+		return '  '.repeat(depth);
+	}
+
+	getPair(key, value, contextOp, depth) {
+		let offset = this.getOffset(depth);
+
 		if (value === '') {
-			return '"' + key + '": ';
+			return offset + '"' + key + '": ';
 		}
 		else if (value === 'true' || value === 'false' || value === 'null' || value.match(/^[0-9]+$/)) {
-			return '"' + key + '": ' + value;
+			return offset + '"' + key + '": ' + value;
 		}
 		else if (value.match(/^[0-9a-zA-Z]+$/)) { // "Value" is a primitive value
-			return '"' + key + '": "' + value + '"';
+			return offset + '"' + key + '": "' + value + '"';
 		}
 		else { // "Value" is an object value
-			return '"' + key + '": ' + value;
+			return offset + '"' + key + '": ' + value;
 		}
 	}
 
-	getObject(pair, contextOp) {
-		return '{\n\t' + pair + '\n}';
+	getObject(pair, contextOp, depth) {
+		let offsetEnd = this.getOffset(depth);
+		let offsetStart = contextOp && contextOp.container == 'pair' ? '' : offsetEnd; // Remove offset if the object is a pair's value (it's inline).
+
+		if (pair)
+			return offsetStart + '{\n' + pair + '\n' + offsetEnd + '}';
+		else
+			return offsetStart + '{\n' + offsetEnd + '}';
 	}
 
-	getArray(content, contextOp) {
-		return '[\n\t' + content + '\n]';
+	getArray(content, contextOp, depth) {
+		let offsetEnd = this.getOffset(depth);
+		let offsetStart = contextOp && contextOp.container == 'pair' ? '' : offsetEnd; // Remove offset if the array is a pair's value (it's inline).
+
+		if (content)
+			return offsetStart + '[\n' + content + '\n' + offsetEnd + ']';
+		else
+			return offsetStart + '[\n' + offsetEnd + ']';
 	}
 
 	concatenateItems(item1, item2, contextOp) {
 		return item1 + ',\n' + item2;
 	}
 
-	multiplyItem(item, repetitions, contextOp) {
+	multiplyItem(item, repetitions, contextOp, depth) {
+		let offset = this.getOffset(depth);
 		let multiplier = parseInt(repetitions);
 		let arr = [];
 		for (let index = 0; index < multiplier; index++) {
-			arr.push(item);
+			arr.push(offset + item);
 		}
 
 		return arr.join(',\n');

@@ -3,6 +3,8 @@ class Node {
 		this.root = value;
 		this.left = left;
     this.right = right;
+    this.depth = 0;
+    this.container = null;
     
     this.isNode = true;
     this.parent = null;
