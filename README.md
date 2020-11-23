@@ -1,47 +1,67 @@
-# Fluent Key-Value for Visual Studio Code
-Makes writing key-value code (like JSON) fluent, with a simple set of `snippets` and `productivity shortcuts`.
+<p>
+  <a href="https://marketplace.visualstudio.com/items?itemName=wmontalvo.vsc-jsonsnippets">
+    <img alt="VS Code Marketplace Version" src="https://vsmarketplacebadge.apphb.com/version/wmontalvo.vsc-jsonsnippets.svg">
+  </a>
+  <a href="https://marketplace.visualstudio.com/items?itemName=wmontalvo.vsc-jsonsnippets">
+    <img alt="VS Code Marketplace Installs" src="https://img.shields.io/visual-studio-marketplace/i/wmontalvo.vsc-jsonsnippets">
+  </a>
+  <a href="https://marketplace.visualstudio.com/items?itemName=wmontalvo.vsc-jsonsnippets">
+    <img alt="VS Code Marketplace Rating" src="https://vsmarketplacebadge.apphb.com/rating-short/wmontalvo.vsc-jsonsnippets.svg">
+  </a>
+  <a href="https://marketplace.visualstudio.com/items?itemName=wmontalvo.vsc-jsonsnippets">
+    <img alt="VS Code Marketplace Downloads" src="https://img.shields.io/visual-studio-marketplace/d/wmontalvo.vsc-jsonsnippets">
+  </a>
+</p>
+
+Makes writing key-value code (like JSON) fluent, with a simple set of `snippets` and `productivity shortcuts`.  
 
 ## Shortcuts as commands (beta)
-Introduce JSON snippets by writing commands in the Command Palette: `Ctrl + Shift + P` then search for `Fluent Key-Value: Create JSON`.  
-For this, the extension has it own "domain-specific language" (DSL) in order to speed up the snippets generation:  
+Speed up writing JSON by running commands in the Command Palette: `Ctrl + Shift + P` then search for `Fluent Key-Value: Create JSON`.  
 
-|  Token  | Meaning       | Command example      | Example comments                                                    |
-|:-------:|---------------|----------------------|---------------------------------------------------------------------|
-|  `word` | Key or value  | language             | generates a pair with "language" key                                |
-|   `o`   | Object        | o                    | generates an empty object                                           |
-|   `a`   | Array         | a                    | generates an empty array                                            |
-|   `,`   | Sibling       | language,path        | generates 02 pairs with the given keys                              |
-| `[...]` | Value of pair | language[javascript] | generates a pair with "language" key, and "javascript" value        |
-|   `>`   | Contains...   | o>language,path      | generates an object with 02 pairs with the given keys               |
-|   `*`   | Repeater      | o>*2                 | generates an object with 02 empty pairs                             |
-| `(...)` | Grouping      | (o>language,path)*2  | generates 02 equal items with the structure within the parentheses. |
-|         |               |                      |                                                                     |
-
-  
-E.g: `o>containers[a>o>image[nginx],port[80]]` would generate this snippet:  
+E.g: this command `o>containers[a>(o>image,port[80])*2]` would generate this snippet:  
 
 ```javascript
 {
   "containers": [
     {
-      "image": "nginx",
+      "image": ,
+      "port": 80
+    },
+    {
+      "image": ,
       "port": 80
     }
   ]
 }
-```
+``` 
+For this, the extension has it own "domain-specific language (DSL)".  
 
-Other command examples:  
+|  Token    | Meaning        | Comments                                                        |
+|:---------:|----------------|-----------------------------------------------------------------|
+|  `word`   | Key or value   | Keys are always string. Values can be string, boolean, number.  |
+|   `o`     | Object         |                                                                 |
+|   `a`     | Array          |                                                                 |
+|   `,`     | Sibling        | Applies to pairs and objects.                                   |
+| `[...]`   | Value of pair  | E.g `language[javascript]`.                                     |
+|   `>`     | Contains...    | Only objects and arrays can "contain something".                |
+|   `*`     | Repeater       | Syntax `[item]*N`. Repeats 'item', 'N' times. E.g `o*3`         |
+| `(...)`   | Grouping       | For assigning siblings or repeating.  E.g `(name,path)*2`       |
+|           |                |                                                                 |
 
-- `language,path`  
+### Command examples:  
+- `language`  
 - `isActive[true]`  
-- `o>language,path`  
 - `a>5,true,csharp`  
+- `name,image,path`  
+- `name,image[nginx]`  
+- `*5`  
+- `o>*2`  
+- `o>language,path`  
 - `a>(o>language,path)*2`  
 - `snippets[a>(o>language,path)*2]`  
 - `o>spec[o>containers[a>(o>name[frontend],image[nginx],ports[a>o>containerPort[80]])*2]]`
 
-## Snippets in Editor (typing)
+## Snippets in Editor (while typing)
 Working with JSON config files:
 
 ![JSON snippet example](https://raw.githubusercontent.com/wilsonmontalvo/vsc-jsonsnippets/master/images/json-snippet-demo.gif)
