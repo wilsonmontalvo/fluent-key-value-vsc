@@ -1,5 +1,13 @@
 # Change Log
 
+## [0.9.3 - Nov 29, 2020]
+
+- Introduce productivity shortcuts commands for YAML: `Ctrl + Shift + P` then search for `Fluent Key-Value: Create YAML`.  
+
+## [0.9.2 - Nov 23, 2020]
+
+- Update readme file.  
+
 ## [0.9.1 - Nov 22, 2020]
 
 - Fixed JSON format for shortcut commands.

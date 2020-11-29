@@ -79,26 +79,40 @@ class JsonResolver extends KeyValueResolver {
 		return arr.join(',\n');
 	}
 
-	resolve(left, operator, right, contextOp) {
+	resolve(left, operator, right, node, contextOp) {
 		if (!operator) { // It's single item
 			if (right == 'o')
-				return this.getObject('');
+				return this.getObject('', node, node.depth);
 			else if (right == 'a')
-				return this.getArray('');
+				return this.getArray('', node, node.depth);
 			else
-				return this.getPair(right, '');
+				return this.getPair(right, '', node, node.depth);
 		}
 		else if (operator == '[') { // '[' is only for pairs
-			return this.getPair(left, right);
+			let value = '';
+			if (right == 'o')
+				value = this.getObject('', node, node.depth);
+			else if (right == 'a')
+				value = this.getArray('', node, node.depth);
+			else
+				value = right;
+
+			return this.getPair(left, value, node, node.depth);
 		}
 		else if (operator == '>') {
 			let content = right;
-			if(right.match(/^[0-9a-zA-Z]+$/))
-				content = this.getPair(right, '');
+
+			if (right == 'o') {
+				content = this.getObject('', node.right, node.right.depth)
+			}
+			else if(right.match(/^[0-9a-zA-Z]+$/)) {
+				content = this.getJsonItem(right, node.right.container, node.right.depth);
+			}
+
 			if (left == 'o')
-				return this.getObject(content);
+				return this.getObject(content, node, node.depth);
 			else if (left == 'a')
-				return this.getArray(content);
+				return this.getArray(content, node, node.depth);
 			else 
 				return '###'
 		}
@@ -106,24 +120,120 @@ class JsonResolver extends KeyValueResolver {
 			let item1 = left;
 			let item2 = right;
 
-			if(left.match(/^[0-9a-zA-Z]+$/))
-				item1 = this.getPair(left, '');
-			if(right.match(/^[0-9a-zA-Z]+$/))
-				item2 = this.getPair(right, '');
+			if (left == 'o' || left == 'a') {
+				item1 = left == 'o' ? this.getObject('', node, node.depth) 
+					: this.getArray('', node, node.depth);
+			}
+			else if(left.match(/^[0-9a-zA-Z]+$/)) {
+				item1 = this.getJsonItem(left, node.left.container, node.left.depth);
+			}
+
+			if (right == 'o' || right == 'a') {
+				item2 = right == 'o' ? this.getObject('', node, node.depth) 
+					: this.getArray('', node, node.depth);
+			}
+			else if(right.match(/^[0-9a-zA-Z]+$/)) {
+				item2 = this.getJsonItem(right, node.right.container, node.right.depth);
+			}
 
 			return this.concatenateItems(item1, item2);
 		}
 		else if (operator == '*') {
 			let repetitions = parseInt(right);
 			if (!left)
-				left = this.getPair('', '');
+				left = this.getPair('', '', node, node.depth);
 			else if (left == 'o')
-				left = this.getObject('', contextOp);
+				left = this.getObject('', node, node.depth);
 
-			return this.multiplyItem(left, repetitions, contextOp);
+			return this.multiplyItem(left, repetitions, node, 0);
 		}
 
-		return this.getItem(right, contextOp);
+		return this.getItem(right, node);
 	}
+
+	getJsonItem(value, container, depth) {
+		let result = '';
+		if (container == 'array')
+			result = this.getValueItem(value, depth);
+		else //if (container == 'object')
+			result = this.getPair(value, '', null, depth);
+		// else
+		// 	result = '#';
+
+		return result;
+	}
+
+	setNodesDepth(node, contextOp, currentDepth, container) {
+		node.depth = currentDepth;
+		node.container = container;
+
+		if(node.isLeafe()) {
+			return;
+		}
+		
+		var depthOperators = ['>'];
+
+		if (depthOperators.includes(node.root)) {
+			currentDepth++;
+
+			if (node.left.root === 'a')
+				container = 'array';
+			else if (node.left.root === 'o')
+				container = 'object';
+		}
+
+		if (node.root == '[')
+			container = 'pair';
+
+		if (node.left) this.setNodesDepth(node.left, node, currentDepth, container);
+		if (node.right) this.setNodesDepth(node.right, node, currentDepth, container);
+	}
+
+	// resolve(left, operator, right, contextOp) {
+	// 	if (!operator) { // It's single item
+	// 		if (right == 'o')
+	// 			return this.getObject('');
+	// 		else if (right == 'a')
+	// 			return this.getArray('');
+	// 		else
+	// 			return this.getPair(right, '');
+	// 	}
+	// 	else if (operator == '[') { // '[' is only for pairs
+	// 		return this.getPair(left, right);
+	// 	}
+	// 	else if (operator == '>') {
+	// 		let content = right;
+	// 		if(right.match(/^[0-9a-zA-Z]+$/))
+	// 			content = this.getPair(right, '');
+	// 		if (left == 'o')
+	// 			return this.getObject(content);
+	// 		else if (left == 'a')
+	// 			return this.getArray(content);
+	// 		else 
+	// 			return '###'
+	// 	}
+	// 	else if (operator == ',') {
+	// 		let item1 = left;
+	// 		let item2 = right;
+
+	// 		if(left.match(/^[0-9a-zA-Z]+$/))
+	// 			item1 = this.getPair(left, '');
+	// 		if(right.match(/^[0-9a-zA-Z]+$/))
+	// 			item2 = this.getPair(right, '');
+
+	// 		return this.concatenateItems(item1, item2);
+	// 	}
+	// 	else if (operator == '*') {
+	// 		let repetitions = parseInt(right);
+	// 		if (!left)
+	// 			left = this.getPair('', '');
+	// 		else if (left == 'o')
+	// 			left = this.getObject('', contextOp);
+
+	// 		return this.multiplyItem(left, repetitions, contextOp);
+	// 	}
+
+	// 	return this.getItem(right, contextOp);
+	// }
 }
 exports.JsonResolver = JsonResolver;

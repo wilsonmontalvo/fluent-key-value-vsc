@@ -16,10 +16,14 @@
 Makes writing key-value code (like JSON) fluent, with a simple set of `snippets` and `productivity shortcuts`.  
 
 ## Shortcuts as commands (beta)
-Speed up writing JSON by running commands in the Command Palette: `Ctrl + Shift + P` then search for `Fluent Key-Value: Create JSON`.  
+Speed up writing JSON by running commands in the Command Palette: `Ctrl + Shift + P` then search for:  
 
-E.g: this command `o>containers[a>(o>image,port[80])*2]` would generate this snippet:  
+- Fluent Key-Value: Create JSON  
+- Fluent Key-Value: Create YAML  
 
+E.g: this command `o>containers[a>(o>image,port[80])*2]` would generate these snippets:  
+
+For JSON:  
 ```javascript
 {
   "containers": [
@@ -34,19 +38,28 @@ E.g: this command `o>containers[a>(o>image,port[80])*2]` would generate this sni
   ]
 }
 ``` 
+
+For YAML:  
+```javascript
+  containers:
+  - image: 
+    port: 80
+  - image: 
+    port: 80
+``` 
 For this, the extension has it own "domain-specific language (DSL)".  
 
-|  Token    | Meaning        | Comments                                                        |
-|:---------:|----------------|-----------------------------------------------------------------|
-|  `word`   | Key or value   | Keys are always string. Values can be string, boolean, number.  |
-|   `o`     | Object         |                                                                 |
-|   `a`     | Array          |                                                                 |
-|   `,`     | Sibling        | Applies to pairs and objects.                                   |
-| `[...]`   | Value of pair  | E.g `language[javascript]`.                                     |
-|   `>`     | Contains...    | Only objects and arrays can "contain something".                |
-|   `*`     | Repeater       | Syntax `[item]*N`. Repeats 'item', 'N' times. E.g `o*3`         |
-| `(...)`   | Grouping       | For assigning siblings or repeating.  E.g `(name,path)*2`       |
-|           |                |                                                                 |
+|  Token    | Meaning        | Comments                                                          |
+|:---------:|----------------|-------------------------------------------------------------------|
+|  `word`   | Key or value   | Keys are always string. Values can be string, boolean, number.    |
+|   `o`     | Object         |                                                                   |
+|   `a`     | Array          |                                                                   |
+|   `,`     | Sibling        | Applies to pairs and objects.                                     |
+| `[...]`   | Value of pair  | E.g `language[javascript]`.                                       |
+|   `>`     | Contains...    | Only objects and arrays can "contain something".                  |
+|   `*`     | Repeater       | Syntax `[item]*N`. Repeats 'item', 'N' times. E.g `o*3`           |
+| `(...)`   | Grouping       | For assigning siblings or repeating.  E.g `(o>language,path)*2`   |
+|           |                |                                                                   |
 
 ### Command examples:  
 - `language`  
@@ -59,7 +72,7 @@ For this, the extension has it own "domain-specific language (DSL)".
 - `o>language,path`  
 - `a>(o>language,path)*2`  
 - `snippets[a>(o>language,path)*2]`  
-- `o>spec[o>containers[a>(o>name[frontend],image[nginx],ports[a>o>containerPort[80]])*2]]`
+- `o>spec[o>containers[a>(o>name[frontend],image[nginx],ports[a>o>containerPort[80],name])*2]]`
 
 ## Snippets in Editor (while typing)
 Working with JSON config files:

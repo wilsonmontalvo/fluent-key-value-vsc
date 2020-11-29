@@ -50,7 +50,7 @@ suite('Resolver Test Suite', () => {
 		// Expression: *2
 		let node1 = new Node(null, '2', null);
 		let node2 = new Node(null, '*', node1);
-		expAnalyzer.setNodesDepth(node2, null, 0);
+		resolver.setNodesDepth(node2, null, 0);
 
 		var result = expAnalyzer.evaluateExpression(node2, null);
 
@@ -81,7 +81,7 @@ suite('Resolver Test Suite', () => {
 		let left = new Node(null, 'o', null);
 		let right = new Node(null, 'image', null);
 		let node = new Node(left, '>', right);
-		expAnalyzer.setNodesDepth(node, null, 0);
+		resolver.setNodesDepth(node, null, 0);
 
 		var result = expAnalyzer.evaluateExpression(node, null);
 
@@ -108,7 +108,7 @@ suite('Resolver Test Suite', () => {
 		let node4 = new Node(node2, '[', node3);
 		let tree = new Node(node1, '>', node4);
 		
-		expAnalyzer.setNodesDepth(tree, null, 0);
+		resolver.setNodesDepth(tree, null, 0);
 
 		var result = expAnalyzer.evaluateExpression(tree, null);
 
@@ -127,7 +127,7 @@ suite('Resolver Test Suite', () => {
 		let node6 = new Node(null, 'o', null);
 		let tree = new Node(node6, '>', node5);
 
-		expAnalyzer.setNodesDepth(tree, null, 0);
+		resolver.setNodesDepth(tree, null, 0);
 
 		var result = expAnalyzer.evaluateExpression(tree, null);
 
@@ -146,7 +146,7 @@ suite('Resolver Test Suite', () => {
 		let node6 = new Node(null, 'o', null);
 		let tree = new Node(node6, '>', node5);
 
-		expAnalyzer.setNodesDepth(tree, null, 0);
+		resolver.setNodesDepth(tree, null, 0);
 
 		var result = expAnalyzer.evaluateExpression(tree, null);
 
@@ -161,7 +161,7 @@ suite('Resolver Test Suite', () => {
 		let node3 = new Node(null, 'o', null);
 		let tree = new Node(node3, '>', node2);
 
-		expAnalyzer.setNodesDepth(tree, null, 0);
+		resolver.setNodesDepth(tree, null, 0);
 
 		var result = expAnalyzer.evaluateExpression(tree, null);
 
@@ -176,7 +176,7 @@ suite('Resolver Test Suite', () => {
 		let node3 = new Node(null, '2', null);
 		let tree = new Node(node2, '*', node3);
 
-		expAnalyzer.setNodesDepth(tree, null, 0);
+		resolver.setNodesDepth(tree, null, 0);
 
 		var result = expAnalyzer.evaluateExpression(tree, null);
 
@@ -195,7 +195,7 @@ suite('Resolver Test Suite', () => {
 		let node6 = new Node(null, '2', null);
 		let tree = new Node(node5, '*', node6);
 
-		expAnalyzer.setNodesDepth(tree, null, 0);
+		resolver.setNodesDepth(tree, null, 0);
 
 		var result = expAnalyzer.evaluateExpression(tree, null);
 
@@ -227,7 +227,7 @@ suite('Resolver Test Suite', () => {
 		let right = new Node(null, 'o', null);
 		let node = new Node(left, '>', right);
 
-		expAnalyzer.setNodesDepth(node, null, 0);
+		resolver.setNodesDepth(node, null, 0);
 		var result = expAnalyzer.evaluateExpression(node, null);
 
 		assert.equal(result, '[\n  {\n  }\n]');
@@ -245,7 +245,7 @@ suite('Resolver Test Suite', () => {
 		let node6 = new Node(null, 'a', null);
 		let tree = new Node(node6, '>', node5);
 
-		expAnalyzer.setNodesDepth(tree, null, 0);
+		resolver.setNodesDepth(tree, null, 0);
 
 		var result = expAnalyzer.evaluateExpression(tree, null);
 
@@ -264,7 +264,7 @@ suite('Resolver Test Suite', () => {
 		let node6 = new Node(null, 'a', null);
 		let tree = new Node(node6, '>', node5);
 
-		expAnalyzer.setNodesDepth(tree, null, 0);
+		resolver.setNodesDepth(tree, null, 0);
 
 		var result = expAnalyzer.evaluateExpression(tree, null);
 
@@ -286,7 +286,7 @@ suite('Resolver Test Suite', () => {
 		let node8 = new Node(null, 'a', null);
 		let tree = new Node(node8, '>', node7);
 
-		expAnalyzer.setNodesDepth(tree, null, 0);
+		resolver.setNodesDepth(tree, null, 0);
 
 		var result = expAnalyzer.evaluateExpression(tree, null);
 
@@ -310,7 +310,7 @@ suite('Resolver Test Suite', () => {
 		let node2 = new Node(null, 'isActive', null);
 		let tree = new Node(node2, '[', node1);
 
-		expAnalyzer.setNodesDepth(tree, null, 0);
+		resolver.setNodesDepth(tree, null, 0);
 
 		var result = expAnalyzer.evaluateExpression(tree, null);
 
@@ -323,7 +323,7 @@ suite('Resolver Test Suite', () => {
 		let node2 = new Node(null, 'port', null);
 		let tree = new Node(node2, '[', node1);
 
-		expAnalyzer.setNodesDepth(tree, null, 0);
+		resolver.setNodesDepth(tree, null, 0);
 
 		var result = expAnalyzer.evaluateExpression(tree, null);
 
@@ -336,7 +336,7 @@ suite('Resolver Test Suite', () => {
 		let node2 = new Node(null, 'isActive', null);
 		let tree = new Node(node2, '[', node1);
 
-		expAnalyzer.setNodesDepth(tree, null, 0);
+		resolver.setNodesDepth(tree, null, 0);
 
 		var result = expAnalyzer.evaluateExpression(tree, null);
 
@@ -349,7 +349,7 @@ suite('Resolver Test Suite', () => {
 		let node2 = new Node(null, 'isActive', null);
 		let tree = new Node(node2, '[', node1);
 
-		expAnalyzer.setNodesDepth(tree, null, 0);
+		resolver.setNodesDepth(tree, null, 0);
 
 		var result = expAnalyzer.evaluateExpression(tree, null);
 
@@ -382,7 +382,7 @@ suite('Resolver Test Suite', () => {
 		let node6 = new Node(null, 'repository', null);
 		let tree = new Node(node6, '[', node5);
 
-		expAnalyzer.setNodesDepth(tree, null, 0);
+		resolver.setNodesDepth(tree, null, 0);
 
 		var result = expAnalyzer.evaluateExpression(tree, null);
 
@@ -400,7 +400,7 @@ suite('Resolver Test Suite', () => {
 		let node5 = new Node(null, 'repository', null);
 		let tree = new Node(node5, '[', node4);
 
-		expAnalyzer.setNodesDepth(tree, null, 0);
+		resolver.setNodesDepth(tree, null, 0);
 
 		var result = expAnalyzer.evaluateExpression(tree, null);
 
@@ -419,7 +419,7 @@ suite('Resolver Test Suite', () => {
 		let node6 = new Node(null, 'snippets', null);
 		let tree = new Node(node6, '[', node5);
 
-		expAnalyzer.setNodesDepth(tree, null, 0);
+		resolver.setNodesDepth(tree, null, 0);
 
 		var result = expAnalyzer.evaluateExpression(tree, null);
 
@@ -441,7 +441,7 @@ suite('Resolver Test Suite', () => {
 		let node8 = new Node(null, 'containers', null);
 		let tree = new Node(node8, '[', node7);
 
-		expAnalyzer.setNodesDepth(tree, null, 0);
+		resolver.setNodesDepth(tree, null, 0);
 
 		var result = expAnalyzer.evaluateExpression(tree, null);
 
@@ -466,7 +466,7 @@ suite('Resolver Test Suite', () => {
 		let node10 = new Node(null, 'containers', null);
 		let tree = new Node(node10, '[', node9);
 
-		expAnalyzer.setNodesDepth(tree, null, 0);
+		resolver.setNodesDepth(tree, null, 0);
 
 		var result = expAnalyzer.evaluateExpression(tree, null);
 
@@ -508,7 +508,7 @@ suite('Resolver Test Suite', () => {
 		let node22 = new Node(null, 'containers', null);
 		let tree = new Node(node22, '[', node21);
 
-		expAnalyzer.setNodesDepth(tree, null, 0);
+		resolver.setNodesDepth(tree, null, 0);
 
 		var result = expAnalyzer.evaluateExpression(tree, null);
 

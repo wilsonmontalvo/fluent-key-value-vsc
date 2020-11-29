@@ -1,6 +1,6 @@
 {
     "name": "vsc-jsonsnippets",
-    "displayName": "Fluent Key-Value - JSON",
+    "displayName": "Fluent Key-Value - JSON, YAML",
     "description": "Makes writing JSON fluent, with a simple set of snippets.",
     "icon": "images/json_logo.png",
     "publisher": "wmontalvo",
@@ -24,14 +24,19 @@
         "url": "https://github.com/wilsonmontalvo/vsc-jsonsnippets.git"
     },
     "activationEvents": [
-        "onCommand:fluent-key-value.create"
+        "onCommand:fluent-key-value.createJson",
+        "onCommand:fluent-key-value.createYaml"
     ],
     "main": "./extension.js",
     "contributes": {
         "commands": [
             {
-                "command": "fluent-key-value.create",
+                "command": "fluent-key-value.createJson",
                 "title": "Fluent Key-Value: Create JSON (Beta)"
+            },
+            {
+                "command": "fluent-key-value.createYaml",
+                "title": "Fluent Key-Value: Create YAML (Beta)"
             }
         ],
         "snippets": [

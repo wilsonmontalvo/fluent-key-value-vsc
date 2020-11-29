@@ -3,6 +3,7 @@
 const vscode = require('vscode');
 const { ExpressionAnalyzer } = require("./ExpressionAnalyzer");
 const { JsonResolver } = require("./JsonResolver");
+const { YamlResolver } = require('./YamlResolver');
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -19,39 +20,55 @@ function activate(context) {
 	// The command has been defined in the package.json file
 	// Now provide the implementation of the command with  registerCommand
 	// The commandId parameter must match the command field in package.json
-	let disposable = vscode.commands.registerCommand('fluent-key-value.create', function () {
-		let options = {};
-		if (vscode.window.activeTextEditor.selection.isEmpty) {
-			options = { prompt: "Enter snippet's shortcut", placeHolder: "e.g: o>image[nginx]" }
-		}
-		else {
-			var selectedText = vscode.window.activeTextEditor.document.getText(vscode.window.activeTextEditor.selection);
-			options = { prompt: "Enter snippet's shortcut", placeHolder: "e.g: ob>1", value: selectedText }
-		}
-		
+	let cmdCreateJson = vscode.commands.registerCommand('fluent-key-value.createJson', function () {
+		let options = getPromtOptions();
 		vscode.window.showInputBox(options)
 			.then((snipShortcut) => {
-				const editor = vscode.window.activeTextEditor;
-				if (editor) {
-					const selection = editor.selection;
-
-					let resolver = new JsonResolver();
-					let analyzer = new ExpressionAnalyzer(resolver);
-					let snippetResult = analyzer.analyze(snipShortcut);
-
-					editor.edit(editBuilder => {
-						editBuilder.replace(selection, '');
-					}).then(() => {
-						var position = vscode.window.activeTextEditor.selection.end; 
-						//vscode.window.activeTextEditor.selection = new vscode.Selection(position, position);
-						vscode.window.activeTextEditor.insertSnippet(new vscode.SnippetString(snippetResult), position);
-					});
-				}
+				if (snipShortcut)
+					createSnippet(snipShortcut, new JsonResolver());
+			});
+	});
+	
+	let cmdCreateYaml = vscode.commands.registerCommand('fluent-key-value.createYaml', function () {
+		let options = getPromtOptions();
+		vscode.window.showInputBox(options)
+			.then((snipShortcut) => {
+				if (snipShortcut)
+					createSnippet(snipShortcut, new YamlResolver());
 			});
 	});
 
-	context.subscriptions.push(disposable);
+	context.subscriptions.push(cmdCreateJson);
+	context.subscriptions.push(cmdCreateYaml);
 }
+
+function getPromtOptions() {
+	if (vscode.window.activeTextEditor.selection.isEmpty) {
+		return { prompt: "Enter snippet's shortcut", placeHolder: "e.g: o>image[nginx]" }
+	}
+	else {
+		var selectedText = vscode.window.activeTextEditor.document.getText(vscode.window.activeTextEditor.selection);
+		return { prompt: "Enter snippet's shortcut", value: selectedText }
+	}
+}
+
+function createSnippet(snipShortcut, resolver) {
+	const editor = vscode.window.activeTextEditor;
+	if (editor) {
+		const selection = editor.selection;
+		let analyzer = new ExpressionAnalyzer(resolver);
+		let snippetResult = analyzer.analyze(snipShortcut);
+
+		editor.edit(editBuilder => {
+			editBuilder.replace(selection, '');
+		}).then(() => {
+			var position = vscode.window.activeTextEditor.selection.end; 
+			//vscode.window.activeTextEditor.selection = new vscode.Selection(position, position);
+			vscode.window.activeTextEditor.insertSnippet(new vscode.SnippetString(snippetResult), position);
+		});
+	}
+}
+
 exports.activate = activate;
 
 // this method is called when your extension is deactivated
