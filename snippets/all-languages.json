@@ -49,6 +49,24 @@
 		],
 		"description": "Create JSON key/value pair ending with comma.\nRecommended for nested objects."
 	},
+	"JSON.createPairObject": {
+		"prefix": "pairo",
+		"body": [
+			"${1:<key>}: {",
+			"\t$0",
+			"}"
+		],
+		"description": "Create JSON key/value pair, having an Object value."
+	},
+	"JSON.createPairArray": {
+		"prefix": "paira",
+		"body": [
+			"${1:<key>}: [",
+			"\t$0",
+			"]"
+		],
+		"description": "Create JSON key/value pair, having an Array value."
+	},
 	"JSON.createPairCommaLn": {
 		"prefix": "paircln",
 		"body": [

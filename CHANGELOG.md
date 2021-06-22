@@ -1,5 +1,9 @@
 # Change Log
 
+## [0.9.4 - Jun 22, 2021]
+
+- Add pairo, paira for JSON and JS. 
+
 ## [0.9.3 - Nov 29, 2020]
 
 - Introduce productivity shortcuts commands for YAML: `Ctrl + Shift + P` then search for `Fluent Key-Value: Create YAML`.  

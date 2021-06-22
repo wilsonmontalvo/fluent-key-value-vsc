@@ -15,6 +15,43 @@
 
 Makes writing key-value code (like JSON) fluent, with a simple set of `snippets` and `productivity shortcuts`.  
 
+## Snippets
+Working with JSON config files:
+
+![JSON snippet example](https://raw.githubusercontent.com/wilsonmontalvo/vsc-jsonsnippets/master/images/json-snippet-demo.gif)
+
+Defining json-data in several programming languages (JavaScript, TypeScript, etc):
+
+![JSON snippet example](https://raw.githubusercontent.com/wilsonmontalvo/vsc-jsonsnippets/master/images/json-snippet-js.gif)
+
+### Snippets:
+
+| Snippets | Content |
+| -------: | --------|
+| obj | Create a JSON object |
+| objc | Create a JSON object ending with comma |
+| arr | Create a JSON array |
+| arrc | Create a JSON array ending with comma |
+| pair | Create JSON key/value pair |
+| pairc | Create JSON key/value pair ending with comma |
+| paircln | Create JSON key/value pair ending with comma and jumping to next line. Not recommended for complex "value" |
+
+### Productivity shortcuts:
+
+| Snippets | Content |
+| -------: | --------|
+| pairo | Create pair with object value |
+| paira | Create pair with array value |
+| pair*2 | Create 02 pairs |
+| pair*3 | Create 03 pairs |
+| obj>1 | Create JSON object with 01 pair. |
+| obj>2 | Create JSON object with 02 pairs. |
+| obj>3 | Create JSON object with 03 pairs. |
+| arr>1 | Create JSON array with 01 item. |
+| arr>2 | Create JSON array with 02 items. |
+| arr>3 | Create JSON array with 03 items. |
+
+
 ## Shortcuts as commands (beta)
 Speed up writing JSON by running commands in the Command Palette: `Ctrl + Shift + P` then search for:  
 
@@ -73,40 +110,6 @@ For this, the extension has it own "domain-specific language (DSL)".
 - `a>(o>language,path)*2`  
 - `snippets[a>(o>language,path)*2]`  
 - `o>spec[o>containers[a>(o>name[frontend],image[nginx],ports[a>o>containerPort[80],name])*2]]`
-
-## Snippets in Editor (while typing)
-Working with JSON config files:
-
-![JSON snippet example](https://raw.githubusercontent.com/wilsonmontalvo/vsc-jsonsnippets/master/images/json-snippet-demo.gif)
-
-Defining json-data in several programming languages (JavaScript, TypeScript, etc):
-
-![JSON snippet example](https://raw.githubusercontent.com/wilsonmontalvo/vsc-jsonsnippets/master/images/json-snippet-js.gif)
-
-### Snippets:
-
-| Snippets | Content |
-| -------: | --------|
-| obj | Create a JSON object |
-| objc | Create a JSON object ending with comma |
-| arr | Create a JSON array |
-| arrc | Create a JSON array ending with comma |
-| pair | Create JSON key/value pair |
-| pairc | Create JSON key/value pair ending with comma |
-| paircln | Create JSON key/value pair ending with comma and jumping to next line. Not recommended for complex "value" |
-
-### Productivity shortcuts in editor:
-
-| Snippets | Content |
-| -------: | --------|
-| pair*2 | Create 02 pairs |
-| pair*3 | Create 03 pairs |
-| obj>1 | Create JSON object with 01 pair. |
-| obj>2 | Create JSON object with 02 pairs. |
-| obj>3 | Create JSON object with 03 pairs. |
-| arr>1 | Create JSON array with 01 item. |
-| arr>2 | Create JSON array with 02 items. |
-| arr>3 | Create JSON array with 03 items. |
 
 ### Supported languages:
 
